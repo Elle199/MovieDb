@@ -5,8 +5,6 @@
  */
 package moviedb;
 
-import com.mmdb.utilities.ConnectionFactory;
-import com.mysql.jdbc.Connection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

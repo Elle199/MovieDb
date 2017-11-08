@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane maxHeight="50.0" minHeight="50.0" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #222;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -42,7 +42,13 @@
                                  <children>
                                     <TextField fx:id="add_movie_length" maxWidth="500.0" promptText="Length (hh:mm:ss)" />
                                     <DatePicker fx:id="add_movie_date" promptText="Release Date" />
-                                    <TextField fx:id="add_movie_url" maxWidth="500.0" promptText="URL" />
+                                    <TextField fx:id="add_movie_rating" promptText="Rating (xx.y)" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="25.0" prefWidth="500.0" spacing="10.0">
+                                 <children>
+                                    <TextField fx:id="add_movie_url" prefHeight="25.0" prefWidth="410.0" promptText="URL" />
+                                    <Button fx:id="add_movie_btn1" minWidth="70.0" mnemonicParsing="false" onAction="#gatherMovie" text="Get Movie" />
                                  </children>
                               </HBox>
                               <HBox prefHeight="25.0" prefWidth="500.0" spacing="10.0">
@@ -53,7 +59,6 @@
                                        </HBox.margin>
                                     </Button>
                                     <Button fx:id="cancel_movie_btn" minWidth="70.0" mnemonicParsing="false" onAction="#closeAddNew" text="Cancel" />
-                                    <Button fx:id="add_movie_btn1" minWidth="70.0" mnemonicParsing="false" onAction="#gatherMovie" text="Get Movie" />
                                  </children>
                               </HBox>
                            </children>

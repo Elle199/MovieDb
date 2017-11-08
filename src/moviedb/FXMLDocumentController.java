@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package moviedb;
 
 import com.mmdb.beans.MovieBean;
@@ -17,16 +12,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- *
  * @author maxangman
  */
 public class FXMLDocumentController implements Initializable {
@@ -35,8 +31,22 @@ public class FXMLDocumentController implements Initializable {
    private Label label;
    @FXML
    private TextField search_box;
+   
+   //New movie window elements
    @FXML
    private TextField add_movie_url;
+   @FXML
+   private TextField add_movie_title;
+   @FXML
+   private TextField add_movie_description;
+   @FXML
+   private TextField add_movie_genres;
+   @FXML
+   private TextField add_movie_length;
+   @FXML
+   private TextField add_movie_rating;
+   @FXML
+   private DatePicker add_movie_date;
 
    private MovieBean bean = new MovieBean();
 
@@ -67,7 +77,7 @@ public class FXMLDocumentController implements Initializable {
 
          ((Node) (event.getSource())).getScene().getWindow().hide();
       } catch (Exception e) {
-         e.printStackTrace();
+         System.out.println("New Movie Error: " + e.getMessage());
       }
    }
 
@@ -89,7 +99,7 @@ public class FXMLDocumentController implements Initializable {
 
          ((Node) (event.getSource())).getScene().getWindow().hide();
       } catch (Exception e) {
-         e.printStackTrace();
+         System.out.println("Close Movie Error: " + e.getMessage());
       }
    }
 
@@ -101,14 +111,26 @@ public class FXMLDocumentController implements Initializable {
    }
 
    @FXML
-   public void gatherMovie() {
+   private void gatherMovie() {
       try {
          String url = add_movie_url.getText();
-         Document doc = Jsoup.connect(url).get();
+         System.out.println(url);
+         Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
          Elements info = doc.select("div#title-overview-widget");
+         System.out.println("Got Info");
+         String title = info.select("div.title_wrapper h1").html();
+         title = title.substring(0, title.indexOf("&"));
+         System.out.println(title);
          
+         
+
       } catch (Exception ex) {
-         System.out.println("ScrapException: " + ex.getMessage());
+         Alert alert = new Alert(AlertType.ERROR);
+         alert.setTitle("Gather Error");
+         alert.setHeaderText("There seems to have been an error...");
+         alert.setContentText("An error has occurred while trying to get \n"
+                 + "information from provided site. \n" + "\nError\n" + ex.getMessage());
+         alert.showAndWait();
       }
    }
 
