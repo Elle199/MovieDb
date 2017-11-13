@@ -17,6 +17,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,7 +32,9 @@ public class FXMLDocumentController implements Initializable {
    private Label label;
    @FXML
    private TextField search_box;
-   
+   @FXML
+   private VBox movie_container;
+
    //New movie window elements
    @FXML
    private TextField add_movie_url;
@@ -54,11 +57,6 @@ public class FXMLDocumentController implements Initializable {
    private List<String> movies = new ArrayList<>();
 
    @FXML
-   private void handleButtonAction(ActionEvent event) {
-      System.out.println("You clicked me!");
-   }
-
-   @FXML
    private void doSearch(ActionEvent event) {
       System.out.println(search_box.getText());
    }
@@ -75,7 +73,7 @@ public class FXMLDocumentController implements Initializable {
          stage.setScene(new Scene(loader.load(), 450, 450));
          stage.show();
 
-         ((Node) (event.getSource())).getScene().getWindow().hide();
+         ((Node)(event.getSource())).getScene().getWindow().hide();
       } catch (Exception e) {
          System.out.println("New Movie Error: " + e.getMessage());
       }
@@ -105,7 +103,11 @@ public class FXMLDocumentController implements Initializable {
 
    @FXML
    private void signIn(ActionEvent event) {
-      System.out.println(bean.getMovies());
+      List<Movie> movies = bean.getMovies();
+      for(int i = 0; i < movies.size(); i++){
+         String title = movies.get(i).getTitle();
+         
+      }
       ((Node) event.getTarget()).getScene().lookup("#signInPane").setVisible(false);
       isLoggedIn = true;
    }
@@ -117,12 +119,49 @@ public class FXMLDocumentController implements Initializable {
          System.out.println(url);
          Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
          Elements info = doc.select("div#title-overview-widget");
-         System.out.println("Got Info");
-         String title = info.select("div.title_wrapper h1").html();
-         title = title.substring(0, title.indexOf("&"));
-         System.out.println(title);
-         
-         
+
+         String imdbTitle = info.select("div.title_wrapper h1").html();
+         imdbTitle = imdbTitle.substring(0, imdbTitle.indexOf("&"));
+
+         String imdbSummery = info.select("div.plot_summary div.summary_text").html();
+
+         String rating = info.select("div.metacriticScore.score_mixed.titleReviewBarSubItem span").html();
+         double ratingNum;
+         if (!rating.equals("")) {
+            System.out.println("err");
+            ratingNum = Double.parseDouble(rating) / 10;
+            System.out.println(ratingNum);
+         } else {
+            ratingNum = 0.0;
+         }
+
+         String release = info.select("div.title_wrapper div.subtext a[title='See more release dates']").html();
+         release = release.substring(0, release.indexOf("("));
+         System.out.println(release);
+
+         String length = info.select("div.title_wrapper div.subtext time").html();
+         if (!length.equals("")) {
+            String lH = length.substring(0, length.indexOf("h"));
+            String lM = length.substring(length.indexOf("h") + 2, length.indexOf("m"));
+            length = lH + ":" + lM + ":00";
+            System.out.println(length);
+         }else{
+            length = "00:00:00";
+         }
+
+         String genre = info.select("div.title_wrapper div.subtext a[href] span").html();
+         if (!genre.equals("")) {
+            genre = genre.replace("\n", ", ");
+         }
+         System.out.println(genre);
+
+         System.out.println(imdbTitle);
+         add_movie_title.setText(imdbTitle);
+         add_movie_description.setText(imdbSummery);
+         add_movie_genres.setText(genre);
+         add_movie_rating.setText(String.valueOf(ratingNum));
+         add_movie_length.setText(length);
+         add_movie_url.clear();
 
       } catch (Exception ex) {
          Alert alert = new Alert(AlertType.ERROR);
@@ -130,6 +169,7 @@ public class FXMLDocumentController implements Initializable {
          alert.setHeaderText("There seems to have been an error...");
          alert.setContentText("An error has occurred while trying to get \n"
                  + "information from provided site. \n" + "\nError\n" + ex.getMessage());
+         add_movie_url.clear();
          alert.showAndWait();
       }
    }

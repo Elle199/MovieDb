@@ -18,4 +18,32 @@ public class Movie {
       this.ageRestriction = ageRestriction;
       this.rating = rating;
    }
+
+   public String getTitle() {
+      return title;
+   }
+
+   public String getDescription() {
+      return description;
+   }
+
+   public String getGenre() {
+      return genre;
+   }
+
+   public String getLength() {
+      return length;
+   }
+
+   public int getReleaseYear() {
+      return releaseYear;
+   }
+
+   public int getAgeRestriction() {
+      return ageRestriction;
+   }
+
+   public double getRating() {
+      return rating;
+   }
 }
