@@ -18,8 +18,7 @@ public class MovieBean {
       String description;
       String genre;
       String length;
-      int releaseYear;
-      int ageRestriction;
+      String releaseDate;
       double rating;
 
       try {
@@ -32,19 +31,34 @@ public class MovieBean {
             description = res.getString("description");
             genre = res.getString("genre");
             length = res.getString("length");
-            releaseYear = res.getInt("release_date");
-            ageRestriction = res.getInt("age_restriction");
+            releaseDate = res.getString("release_date");
             rating = res.getDouble("rating");
-            movies.add(new Movie(title, description, genre, length, releaseYear, ageRestriction, rating));
+            movies.add(new Movie(title, description, genre, length, releaseDate, rating));
          }
          return movies;
       } catch (SQLException ex) {
-         System.out.println("SQULException: " + ex.getMessage());
-         System.out.println("SQULException: " + ex.getSQLState());
-         System.out.println("SQULException: " + ex.getErrorCode());
+         System.out.println("SQLException: " + ex.getMessage());
+         System.out.println("SQLException: " + ex.getSQLState());
+         System.out.println("SQLException: " + ex.getErrorCode());
       } catch (Exception e) {
          System.out.println("Exception: " + e.getMessage());
       }
       return null;
+   }
+
+   public void putMovie(Movie movie) throws SQLException, ClassNotFoundException {
+      Connection connection = ConnectionFactory.getConnection();
+      Statement stmt = connection.createStatement();
+      String title = movie.getTitle();
+      String description = movie.getDescription();
+      String genre = movie.getGenre();
+      String length = movie.getLength();
+      String releaseDate = movie.getReleaseDate();
+      double rating = movie.getRating();
+      description = description.replaceAll("\"", "");
+      description = description.replaceAll("'", "");
+      String query = String.format("INSERT INTO `movies` VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", 
+              title, description, genre, length, releaseDate, rating);
+      stmt.execute(query);
    }
 }

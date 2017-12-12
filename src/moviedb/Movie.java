@@ -5,17 +5,15 @@ public class Movie {
    private String description;
    private String genre;
    private String length;
-   private int releaseYear;
-   private int ageRestriction;
+   private String releaseDate;
    private double rating;
 
-   public Movie(String title, String description, String genre, String length, int releaseYear, int ageRestriction, double rating) {
+   public Movie(String title, String description, String genre, String length, String releaseDate, double rating) {
       this.title = title;
       this.description = description;
       this.genre = genre;
       this.length = length;
-      this.releaseYear = releaseYear;
-      this.ageRestriction = ageRestriction;
+      this.releaseDate = releaseDate;
       this.rating = rating;
    }
 
@@ -35,12 +33,8 @@ public class Movie {
       return length;
    }
 
-   public int getReleaseYear() {
-      return releaseYear;
-   }
-
-   public int getAgeRestriction() {
-      return ageRestriction;
+   public String getReleaseDate() {
+      return releaseDate;
    }
 
    public double getRating() {
