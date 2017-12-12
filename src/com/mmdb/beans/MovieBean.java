@@ -57,8 +57,6 @@ public class MovieBean {
       double rating = movie.getRating();
       description = description.replaceAll("\"", "");
       description = description.replaceAll("'", "");
-      System.out.println(String.format("INSERT INTO `movies` VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", 
-              title, description, genre, length, releaseDate, rating));
       String query = String.format("INSERT INTO `movies` VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", 
               title, description, genre, length, releaseDate, rating);
       stmt.execute(query);

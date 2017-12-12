@@ -87,7 +87,9 @@ public class FXMLDocumentController implements Initializable {
 
          ((Node) (event.getSource())).getScene().getWindow().hide();
       } catch (Exception e) {
-         System.out.println("New Movie Error: " + e.getMessage());
+         Alert alert = new Alert(AlertType.ERROR);
+         alert.setTitle("MMDb Error");
+         alert.setContentText("An error occured while trying to open the 'add new movie' window");
       }
    }
 
@@ -108,7 +110,9 @@ public class FXMLDocumentController implements Initializable {
          }
          ((Node) (event.getSource())).getScene().getWindow().hide();
       } catch (Exception e) {
-         System.out.println("Close Movie Error: " + e.getMessage());
+         Alert alert = new Alert(AlertType.ERROR);
+         alert.setTitle("MMDb Error");
+         alert.setContentText("An error occured while trying to close the 'add new movie' window");
       }
    }
 
