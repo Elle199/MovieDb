@@ -57,8 +57,17 @@ public class MovieBean {
       double rating = movie.getRating();
       description = description.replaceAll("\"", "");
       description = description.replaceAll("'", "");
+      System.out.println(String.format("INSERT INTO `movies` VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", 
+              title, description, genre, length, releaseDate, rating));
       String query = String.format("INSERT INTO `movies` VALUES ('%s', '%s', '%s', '%s', '%s', '%s');", 
               title, description, genre, length, releaseDate, rating);
+      stmt.execute(query);
+   }
+   
+   public void removeMovie(String title) throws SQLException, ClassNotFoundException{
+      Connection connection = ConnectionFactory.getConnection();
+      Statement stmt = connection.createStatement();
+      String query = String.format("DELETE FROM `movies` WHERE `movies`.`title` = %s", title);
       stmt.execute(query);
    }
 }

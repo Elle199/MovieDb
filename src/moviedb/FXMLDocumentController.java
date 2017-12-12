@@ -8,26 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -41,7 +41,7 @@ import org.jsoup.select.Elements;
  * @author maxangman
  */
 public class FXMLDocumentController implements Initializable {
-   
+
    @FXML
    private VBox movie_container;
 
@@ -134,8 +134,16 @@ public class FXMLDocumentController implements Initializable {
    }
 
    @FXML
-   private void selectMovie(ActionEvent event) {
-      selectedMovie = ((Node) event.getTarget()).getParent();
+   private void deleteMovie() throws SQLException, ClassNotFoundException {
+      for (Node n : movie_container.getChildren()) {
+         if (n.getUserData().equals("selected")) {
+            String title = n.lookup("#title").toString();
+            title = title.substring(title.indexOf("'"));
+            bean.removeMovie(title);
+            loadMovies();
+            return;
+         }
+      }
    }
 
    @FXML
@@ -195,74 +203,101 @@ public class FXMLDocumentController implements Initializable {
       }
    }
 
+   private void selectMovie(ActionEvent event) {
+      if (selectedMovie != null) {
+         selectedMovie.setStyle("-fx-border-color:#fff;-fx-border-width:0 0 1 0;");
+         selectedMovie.setUserData("");
+         if (selectedMovie == ((Node) event.getTarget()).getParent()) {
+            selectedMovie = null;
+            return;
+         }
+      }
+      selectedMovie = ((Node) event.getTarget()).getParent();
+      selectedMovie.setStyle("-fx-border-color:#0BF;-fx-border-width:2 2 2 2;");
+      selectedMovie.setUserData("selected");
+   }
+
    private void loadMovies() {
       List<Movie> movies = bean.getMovies();
       movie_container.getChildren().clear();
       for (int i = 0; i < movies.size(); i++) {
          GridPane grid = new GridPane();
-         ImageView img = new ImageView();
+         Button selectBtn = new Button("Select");
          Label labelTitle = new Label(movies.get(i).getTitle());
          Label labelSummery = new Label(movies.get(i).getDescription());
          Label labelGenre = new Label(movies.get(i).getGenre());
          Label labelRating = new Label(String.valueOf(movies.get(i).getRating()));
          Label labelLength = new Label(movies.get(i).getLength());
-         
-         img.setFitHeight(98);
-         grid.add(img, 0, 0);
-         
-         labelTitle.setAlignment(Pos.CENTER);
+
+         selectBtn.setMinWidth(50);
+         selectBtn.setMinHeight(30);
+         selectBtn.setTextAlignment(TextAlignment.CENTER);
+         selectBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               selectMovie(event);
+            }
+         });
+         GridPane.setHalignment(selectBtn, HPos.CENTER);
+         GridPane.setValignment(selectBtn, VPos.CENTER);
+         grid.add(selectBtn, 0, 0);
+
          labelTitle.setPadding(new Insets(0, 0, 0, 5));
          labelTitle.setTextFill(Paint.valueOf("#eeeeee"));
          labelTitle.setFont(Font.font("System", 18));
+         labelTitle.setId("title");
          grid.add(labelTitle, 1, 0);
-         grid.setValignment(labelTitle, VPos.TOP);
-         
-         labelSummery.setAlignment(Pos.CENTER_LEFT);
+         GridPane.setValignment(labelTitle, VPos.TOP);
+
          labelSummery.setPadding(new Insets(25, 5, 0, 5));
          labelSummery.setWrapText(true);
          labelSummery.setTextFill(Paint.valueOf("#eeeeee"));
          grid.add(labelSummery, 1, 0);
-         grid.setValignment(labelSummery, VPos.TOP);
-         
-         labelGenre.setAlignment(Pos.TOP_CENTER);
-         labelGenre.setPadding(new Insets(10, 5, 0, 0));
+         GridPane.setValignment(labelSummery, VPos.TOP);
+
+         labelGenre.setPadding(new Insets(5, 0, 0, 0));
          labelGenre.setTextFill(Paint.valueOf("#eeeeee"));
          labelGenre.setTextAlignment(TextAlignment.CENTER);
          labelGenre.setWrapText(true);
          grid.add(labelGenre, 2, 0);
-         grid.setHalignment(labelGenre, HPos.CENTER);
-         grid.setValignment(labelGenre, VPos.TOP);
-         
-         labelRating.setAlignment(Pos.TOP_CENTER);
-         labelRating.setPadding(new Insets(5, 5, 0, 0));
+         GridPane.setValignment(labelGenre, VPos.TOP);
+         GridPane.setHalignment(labelGenre, HPos.CENTER);
+
+         labelRating.setPadding(new Insets(5, 0, 0, 0));
          labelRating.setTextFill(Paint.valueOf("#eeeeee"));
          grid.add(labelRating, 2, 0);
-         grid.setHalignment(labelRating, HPos.CENTER);
-         grid.setValignment(labelRating, VPos.CENTER);
-         
-         labelLength.setAlignment(Pos.BOTTOM_CENTER);
-         labelLength.setPadding(new Insets(0, 5, 10, 0));
+         GridPane.setValignment(labelRating, VPos.CENTER);
+         GridPane.setHalignment(labelRating, HPos.CENTER);
+
+         labelLength.setPadding(new Insets(0, 0, 5, 0));
          labelLength.setTextFill(Paint.valueOf("#eeeeee"));
          grid.add(labelLength, 2, 0);
-         grid.setHalignment(labelLength, HPos.CENTER);
-         grid.setValignment(labelLength, VPos.BOTTOM);
-         
+         GridPane.setValignment(labelLength, VPos.BOTTOM);
+         GridPane.setHalignment(labelLength, HPos.CENTER);
+
          grid.setMinHeight(100);
+         grid.setMaxHeight(100);
          grid.setStyle("-fx-border-color:#fff;-fx-border-width:0 0 1 0;");
-         
+
          ColumnConstraints col1 = new ColumnConstraints();
          col1.setMinWidth(70);
          col1.setMaxWidth(70);
          ColumnConstraints col2 = new ColumnConstraints();
-         col2.setMinWidth(100);
+         col2.setMinWidth(300);
          col2.setPrefWidth(427);
          col2.setHgrow(Priority.ALWAYS);
          ColumnConstraints col3 = new ColumnConstraints();
          col3.setMinWidth(100);
          col3.setMaxWidth(150);
          
-         grid.getColumnConstraints().addAll(col1,col2,col3);
-         
+         RowConstraints row0 = new RowConstraints();
+         row0.setMinHeight(100);
+         row0.setPrefHeight(100);
+
+         grid.getColumnConstraints().addAll(col1, col2, col3);
+         grid.getRowConstraints().addAll(row0);
+         grid.setUserData("");
+
          movie_container.getChildren().add(grid);
       }
       movies.clear();
@@ -271,5 +306,4 @@ public class FXMLDocumentController implements Initializable {
    @Override
    public void initialize(URL url, ResourceBundle rb) {
    }
-
 }
